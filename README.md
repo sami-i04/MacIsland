@@ -6,6 +6,8 @@ Turns the MacBook notch into a Dynamic Island with music controls, a file shelf 
 
 ![MacIsland – Dynamic Island for the MacBook Notch](screenshots/macisland.png)
 
+**Download:** [latest release](../../releases/latest) → unzip, move MacIsland to Applications. On first launch right-click → Open (the app is not notarized).
+
 **Build:** macOS 14.2+, Xcode Command Line Tools → `./build_app.sh`
 
 Feedback and ideas are welcome – just open an [issue](../../issues).
