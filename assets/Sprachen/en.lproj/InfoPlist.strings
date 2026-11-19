@@ -1,0 +1,3 @@
+"NSCalendarsFullAccessUsageDescription" = "MacIsland shows your next event next to the notch.";
+"NSAppleEventsUsageDescription" = "MacIsland opens Safari’s downloads list when you click the download circle.";
+"NSAudioCaptureUsageDescription" = "MacIsland listens to the audio output so the visualizer matches the music that is playing. Nothing is recorded or stored.";
