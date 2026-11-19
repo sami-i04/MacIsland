@@ -1,6 +1,8 @@
-# MacIsland
+# MacIsland – Dynamic Island for the MacBook Notch
 
 Turns the MacBook notch into a Dynamic Island with music controls, a file shelf with AirDrop, calendar, battery status, quick notes and app shortcuts. A free alternative to NotchNook and boring.notch.
+
+![MacIsland – Dynamic Island for the MacBook Notch](screenshots/macisland.png)
 
 **Build:** macOS 14.2+, Xcode Command Line Tools → `./build_app.sh`
 
