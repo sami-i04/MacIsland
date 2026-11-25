@@ -30,7 +30,6 @@ final class AudioSpectrum: ObservableObject {
         return w
     }()
     private var ring = [Float]()
-    private var sinceLast = 0
     private var sampleRate: Float = 48_000
     private var smoothed = [Float](repeating: 0, count: bandCount)
     private var peakDb = [Float](repeating: -30, count: bandCount)
@@ -47,6 +46,7 @@ final class AudioSpectrum: ObservableObject {
         } catch {
             log.error("Audio-Tap fehlgeschlagen: \(String(describing: error))")
             teardown()
+            running = false
         }
     }
 
@@ -179,7 +179,6 @@ final class AudioSpectrum: ObservableObject {
                 ring.append(contentsOf: UnsafeBufferPointer(start: floats, count: frames))
             }
         }
-        sinceLast += 1
         if ring.count > fftSize * 2 { ring.removeFirst(ring.count - fftSize * 2) }
         while ring.count >= fftSize {
             analyze(Array(ring[(ring.count - fftSize)...]))

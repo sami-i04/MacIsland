@@ -67,7 +67,7 @@ cat > "$APP/Contents/Info.plist" <<EOF
   <key>CFBundleDevelopmentRegion</key>  <string>en</string>
   <key>CFBundleLocalizations</key>      <array><string>de</string><string>en</string></array>
   <key>CFBundlePackageType</key>        <string>APPL</string>
-  <key>CFBundleShortVersionString</key> <string>0.1</string>
+  <key>CFBundleShortVersionString</key> <string>1.1</string>
   <key>CFBundleVersion</key>            <string>$(date +%Y%m%d%H%M)</string>
   <key>LSMinimumSystemVersion</key>     <string>14.2</string>
   <key>LSUIElement</key>                <true/>

@@ -11,6 +11,7 @@ import os
 final class IslandState: ObservableObject {
     @Published var isOpen = false
     @Published var isDragging = false
+    @Published var shelfSession = false
     @Published var shelfTargeted = false
     @Published var airDropTargeted = false
     @Published var hoveredItem: URL?
@@ -46,7 +47,7 @@ final class IslandState: ObservableObject {
         isOpen ? openWidth : CGFloat(config.width) + (compactMusic ? 2 * Layout.compactSide : 0)
     }
 
-    var musicMode: Bool { isOpen && music.showCompact && !isDragging && !showHomeWhileMusic }
+    var musicMode: Bool { isOpen && music.showCompact && !isDragging && !shelfSession && !showHomeWhileMusic }
     @Published var showsActivities = true
     var closedHeight: CGFloat {
         if compactMusic || !thinNotch { return CGFloat(config.height) }
@@ -59,7 +60,7 @@ final class IslandState: ObservableObject {
     @Published var showHomeWhileMusic = false
     private var lastSwitch = Date.distantPast
     static let switchSpring = Animation.spring(response: 0.378, dampingFraction: 0.612)
-    var musicHomeMode: Bool { isOpen && music.showCompact && !isDragging && showHomeWhileMusic }
+    var musicHomeMode: Bool { isOpen && music.showCompact && !isDragging && !shelfSession && showHomeWhileMusic }
 
     func toggleMusicHome() {
         guard Date().timeIntervalSince(lastSwitch) > 0.45 else { return }

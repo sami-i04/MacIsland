@@ -83,7 +83,7 @@ final class NowPlaying: ObservableObject {
         stdinPipe = input
         pipe.fileHandleForReading.readabilityHandler = { [weak self] h in
             let d = h.availableData
-            guard !d.isEmpty else { return }
+            guard !d.isEmpty else { h.readabilityHandler = nil; return }
             DispatchQueue.main.async { self?.consume(d) }
         }
         p.terminationHandler = { [weak self] _ in

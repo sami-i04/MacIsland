@@ -19,8 +19,8 @@ struct IslandView: View {
                      height: state.closedHeight)
     }
 
-    private var shelfVisible: Bool { state.isOpen && state.isDragging }
-    private var homeVisible: Bool { state.isOpen && !musicMode && !state.isDragging }
+    private var shelfVisible: Bool { state.isOpen && (state.isDragging || state.shelfSession) }
+    private var homeVisible: Bool { state.isOpen && !musicMode && !state.isDragging && !state.shelfSession }
     private var musicMode: Bool { state.musicMode }
 
     private var compactSpring: Animation {
@@ -78,7 +78,7 @@ struct IslandView: View {
             .overlay(alignment: .top) {
                 TopStrip(calendar: state.calendar, battery: state.battery,
                          notchWidth: CGFloat(state.config.width), height: CGFloat(state.config.height),
-                         musicActive: state.music.showCompact && !state.isDragging,
+                         musicActive: state.music.showCompact && !state.isDragging && !state.shelfSession,
                          inMusic: musicMode,
                          onSwitch: { state.toggleMusicHome() })
                     .padding(.horizontal, Layout.openTopRadius + Layout.contentInset + 2)

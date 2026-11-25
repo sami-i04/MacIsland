@@ -57,6 +57,32 @@ final class IslandController {
         panel.orderFrontRegardless()
         startTracking()
         startFullscreenWatch()
+        startEdgeGuard()
+    }
+
+    private var edgeMonitors: [Any] = []
+    private var lastEdgeMouse = NSPoint.zero
+
+    private func startEdgeGuard() {
+        let mask: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDragged]
+        if let g = NSEvent.addGlobalMonitorForEvents(matching: mask, handler: { [weak self] _ in self?.guardEdge() }) {
+            edgeMonitors.append(g)
+        }
+        if let l = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { [weak self] e in self?.guardEdge(); return e }) {
+            edgeMonitors.append(l)
+        }
+    }
+
+    private func guardEdge() {
+        guard active, let main = NSScreen.screens.first else { return }
+        let m = NSEvent.mouseLocation
+        let f = screen.frame
+        let prev = lastEdgeMouse
+        lastEdgeMouse = m
+        let r = islandRect(open: state.isOpen, margin: 0)
+        guard f.contains(prev), m.y >= f.maxY - 1, m.x >= r.minX, m.x <= r.maxX else { return }
+        CGWarpMouseCursorPosition(CGPoint(x: m.x, y: main.frame.maxY - f.maxY + 2))
+        CGAssociateMouseAndMouseCursorPosition(1)
     }
 
     private var spaceTimer: Timer?
@@ -115,6 +141,8 @@ final class IslandController {
     func shutdown() {
         spaceTimer?.invalidate()
         timer?.invalidate()
+        edgeMonitors.forEach(NSEvent.removeMonitor)
+        edgeMonitors.removeAll()
         timer = nil
         closeWorkItem?.cancel()
         panel.orderOut(nil)
@@ -206,7 +234,7 @@ final class IslandController {
 
     func releaseKeyboard() {
         guard NSApp.isActive || panel.isKeyWindow else { return }
-        guard !NSApp.windows.contains(where: { $0 is NSOpenPanel && $0.isVisible }) else { return }
+        guard !NSApp.windows.contains(where: { !($0 is IslandPanel) && $0.isVisible && $0.canBecomeKey }) else { return }
         panel.makeFirstResponder(nil)
         panel.allowKey = false
         state.shelf.focused = false
@@ -274,8 +302,9 @@ final class IslandController {
             closeWorkItem?.cancel()
             closeWorkItem = nil
             return
-        } else if !state.isOpen, !panel.ignoresMouseEvents {
-            panel.ignoresMouseEvents = true
+        } else if !state.isOpen {
+            let over = islandRect(open: false, margin: 0).contains(mouse)
+            if panel.ignoresMouseEvents == over { panel.ignoresMouseEvents = !over }
         }
 
         let shouldOpen: Bool
@@ -299,6 +328,7 @@ final class IslandController {
             closeWorkItem?.cancel()
             closeWorkItem = nil
             if !state.isOpen { setOpen(true) }
+            if state.isDragging, !state.shelfSession { state.shelfSession = true }
         } else if state.isOpen, sinceOpen < Layout.openingPhase, !state.isDragging {
             closeWorkItem?.cancel()
             closeWorkItem = nil
@@ -318,7 +348,7 @@ final class IslandController {
     private func setOpen(_ open: Bool) {
         if open { openedAt = Date() }
         state.isOpen = open
-        if !open { state.showHomeWhileMusic = false }
+        if !open { state.showHomeWhileMusic = false; state.shelfSession = false }
         panel.ignoresMouseEvents = !open
         if !open, panel.isKeyWindow || NSApp.isActive {
             panel.makeFirstResponder(nil)
